@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <stdio.h>
 #include <string.h>
 
 char	*ft_strncpy(char *s1, const char *s2, size_t n)
@@ -100,13 +101,14 @@ void	ft_putgrid(char grid[9][9])
     }
 }
 
-int	ft_solve(char **grid, int pos, int solved, char (*res_p)[9][9])
+int	ft_solve(char **grid, int pos, int *solved, char (*res_p)[9][9])
 {
     char    c;
 
     c = '0';
     if (pos == 81)
     {
+	++(*solved);
 	ft_strtabcpy(res_p, grid);
 	return (1);
     }
@@ -119,22 +121,23 @@ int	ft_solve(char **grid, int pos, int solved, char (*res_p)[9][9])
 	    grid[pos / 9][pos % 9] = c;
 	    if (ft_solve(grid, pos + 1, solved, res_p))
 	    {
-		if (solved)
-		    return (0);
-		solved = 1;
+		if (*solved > 1)
+		    return (*solved);
 	    }
 	    grid[pos / 9][pos % 9] = '.';
 	}
     }
-    return (solved);
+    return (*solved);
 }
 
 int	main(int argc, char **argv)
 {
     char    result[9][9];
+    int	    i;
 
+    i = 0;
     if (argc != 10 || ft_checklines(argv + 1)
-	|| ft_solve(argv + 1, 0, 0, &result))
+	|| 1 != ft_solve(argv + 1, 0, &i, &result))
 	write(1, "Erreur\n", 7);
     else
 	ft_putgrid(result);
